@@ -1,64 +1,93 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Variabel Global ---
-    const wordList = ["CAHAYA", "TAUHID", "MANDI", "ROBLOX", "JALAN", "SIGMA", "PUASA", "LAPAR", "DASI", "BERENANG", "MUNGKIN", "KATAK", "LUCU", "IMUT", "KEREN", "MANIS", "PINK", "UNGGU", "GEMAS"]; // Added more words
+    // Expanded and more varied word list
+    const wordList = [
+        // Original + User Additions + More Variety
+        "CAHAYA", "TAUHID", "MANDI", "ROBLOX", "JALAN", "SIGMA", "PUASA", "LAPAR",
+        "DASI", "BERENANG", "MUNGKIN", "KATAK", "LUCU", "IMUT", "KEREN", "MANIS",
+        "PINK", "UNGGU", "GEMAS", // Original + Added
+        // Kosakata Sedang (Menengah) - Provided by User
+        "BERPIKIR", "BERBICARA", "MENDENGAR", "MENULIS", "MEMBACA", "BELAJAR",
+        "MENGAJAR", "BEKERJA", "BERMAIN", "MENARI", "MENYANYI", "TERTAWA",
+        "MENANGIS", "SENANG", "SEDIH", "LAPAR", "HAUS", "LELAH", "CEPAT", "LAMBAT",
+        "TERANG", "GELAP", "MAHAL", "MURAH", "BARU", "LAMA", "KAYA", "MISKIN",
+        "KOTA", "DESA", "HUTAN", "GUNUNG", "SUNGAI", "LAUT", "ANGIN", "HUJAN",
+        "MATAHARI", "BULAN", "BINTANG", "WAKTU",
+        // Additional Indonesian Words (Various Lengths & Categories)
+        "RUMAH", "SEKOLAH", "PASAR", "BUKU", "PENA", "MEJA", "KURSI", "PINTU",
+        "JENDELA", "MOBIL", "MOTOR", "SEPEDA", "PESAWAT", "KAPAL", "KERETA",
+        "MAKAN", "MINUM", "TIDUR", "DUDUK", "BERDIRI", "LIHAT", "AMBIL", "KASIH",
+        "PERGI", "DATANG", "NAIK", "TURUN", "MASUK", "KELUAR", "BUKA", "TUTUP",
+        "ANJING", "KUCING", "BURUNG", "IKAN", "AYAM", "SAPI", "KAMBING", "ULAR",
+        "SEMUT", "NYAMUK", "LALAT", "KUPUKUPU", "GAJAH", "HARIMAU", "SINGA",
+        "MERAH", "BIRU", "HIJAU", "KUNING", "HITAM", "PUTIH", "COKLAT", "ABUABU",
+        "BESAR", "KECIL", "PANJANG", "PENDEK", "TINGGI", "RENDAH", "BERAT", "RINGAN",
+        "PANAS", "DINGIN", "BASAH", "KERING", "BERSIH", "KOTOR", "RAMAI", "SEPI",
+        "BAGUS", "JELEK", "BAIK", "BURUK", "BENAR", "SALAH", "MUDA", "TUA",
+        "CANTIK", "GANTENG", "PINTAR", "BODOH", "RAJIN", "MALAS", "BERANI", "TAKUT",
+        "BAHAGIA", "KECEWA", "MARAH", "SABAR", "PEDAS", "ASIN", "ASAM", "PAHIT",
+        "INDONESIA", "JAKARTA", "BANDUNG", "SURABAYA", "YOGYAKARTA", "BALI",
+        "PAGI", "SIANG", "SORE", "MALAM", "HARI", "MINGGU", "TAHUN", "DETIK", "MENIT",
+        "JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI", "JULI", "AGUSTUS",
+        "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER", "SENIN", "SELASA", "RABU",
+        "KAMIS", "JUMAT", "SABTU", "AIR", "API", "TANAH", "UDARA", "BATU", "PASIR",
+        "POHON", "DAUN", "BUNGA", "BUAH", "SAYUR", "NASI", "ROTI", "SUSU", "KOPI", "TEH",
+        "GULA", "GARAM", "UANG", "DOMPET", "TAS", "SEPATU", "BAJU", "CELANA", "TOPI",
+        "KACAMATA", "JAM", "TELEPON", "KOMPUTER", "INTERNET", "MUSIK", "FILM", "LIBURAN",
+        "KELUARGA", "TEMAN", "SAUDARA", "GURU", "DOKTER", "POLISI", "TENTARA", "PETANI",
+        "NELAYAN", "PEDAGANG", "PRESIDEN", "MENTERI", "GUBERNUR", "BUPATI", "CAMAT", "LURAH"
+    ].map(word => word.toUpperCase()); // Ensure all words are uppercase
+
     let targetWord = '';
-    // let currentGuess = ''; // Not strictly needed as we read from input directly
     let currentRowIndex = 0;
-    const maxGuesses = 7;
+    const maxGuesses = 7; // You can adjust this if needed
     let isGameOver = false;
     let isMusicPlaying = false;
-    let wordLength = 5; // Default, updated by targetWord
+    let wordLength = 5; // Default, will be updated by targetWord
 
     // --- DOM References ---
-    // Screens & Containers
+    // (Keep all existing DOM References - they are correct)
     const loadingScreen = document.getElementById('loading-screen');
     const startScreen = document.getElementById('start-screen');
     const gameContainer = document.querySelector('.game-container');
-    const bubblesBackground = document.querySelector('.bubbles-background'); // Ref for bubbles
-
-    // Start Screen Elements
+    const bubblesBackground = document.querySelector('.bubbles-background');
     const startButton = document.getElementById('start-button');
-
-    // Game Elements
     const gameBoard = document.getElementById('game-board');
     const guessInput = document.getElementById('guess-input');
     const guessForm = document.getElementById('guess-form');
     const messageArea = document.getElementById('message-area');
     const tryAgainButton = document.getElementById('try-again-button');
     const submitButton = document.getElementById('submit-button');
-    const guessesLeftSpan = document.getElementById('guesses-left'); // Span for guesses left
-
-    // Menu Elements
+    const guessesLeftSpan = document.getElementById('guesses-left');
     const menuToggleButton = document.getElementById('menu-toggle');
     const sideMenu = document.getElementById('side-menu');
     const musicToggleMenu = document.getElementById('music-toggle-menu');
     const returnToMainMenuButton = document.getElementById('return-to-main-menu');
     const closeMenuButton = sideMenu.querySelector('.close-menu-button');
-
-    // Audio
     const backgroundMusic = document.getElementById('background-music');
 
     // --- Bubble Creation ---
+    // (Keep the createBubbles function as is)
     function createBubbles() {
-        bubblesBackground.innerHTML = ''; // Clear existing bubbles if any
-        const numberOfBubbles = 10; // Match CSS approx
+        bubblesBackground.innerHTML = '';
+        const numberOfBubbles = 10;
         for (let i = 0; i < numberOfBubbles; i++) {
             const bubble = document.createElement('div');
             bubble.classList.add('bubble');
-            // Set random size, position, duration - can override CSS slightly
-             const size = Math.random() * 80 + 20; // 20px to 100px
+             const size = Math.random() * 80 + 20;
              bubble.style.width = `${size}px`;
              bubble.style.height = `${size}px`;
-             bubble.style.left = `${Math.random() * 95}%`; // Position across width
-             bubble.style.animationDuration = `${Math.random() * 10 + 10}s`; // 10s to 20s
-             bubble.style.animationDelay = `${Math.random() * 5}s`; // 0s to 5s delay
+             bubble.style.left = `${Math.random() * 95}%`;
+             bubble.style.animationDuration = `${Math.random() * 10 + 10}s`;
+             bubble.style.animationDelay = `${Math.random() * 5}s`;
             bubblesBackground.appendChild(bubble);
         }
     }
 
     // --- Audio Functions ---
+    // (Keep the audio functions as they are)
     function playMusic() {
-        if (!backgroundMusic) return; // Safety check
+        if (!backgroundMusic) return;
         backgroundMusic.play().then(() => {
             isMusicPlaying = true;
             musicToggleMenu.checked = true;
@@ -69,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isMusicPlaying = false;
             musicToggleMenu.checked = false;
             localStorage.setItem('musicEnabled', 'false');
-            // Can't reliably show message here as it might be before game starts
         });
     }
 
@@ -86,52 +114,49 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isMusicPlaying) {
             pauseMusic();
         } else {
-             // Try playing - user interaction via toggle counts
              playMusic();
         }
     }
 
     function loadMusicPreference() {
         const musicEnabled = localStorage.getItem('musicEnabled');
-        // Set the toggle state based on preference
         musicToggleMenu.checked = (musicEnabled === 'true');
-        // We will attempt to play only after the start button is clicked if enabled
         console.log("Music preference loaded:", musicEnabled);
     }
 
     // --- UI Flow & Navigation ---
+    // (Keep the UI flow functions as they are)
     function showScreen(screenToShow) {
         loadingScreen.classList.add('hidden');
         startScreen.classList.add('hidden');
-        gameContainer.style.display = 'none'; // Hide game container
+        gameContainer.style.display = 'none';
 
         if (screenToShow === 'loading') {
             loadingScreen.classList.remove('hidden');
         } else if (screenToShow === 'start') {
             startScreen.classList.remove('hidden');
         } else if (screenToShow === 'game') {
-            gameContainer.style.display = 'block'; // Show game container
+            gameContainer.style.display = 'block';
         }
     }
 
     function navigateToStartScreen() {
         showScreen('start');
-        closeSideMenu(); // Close menu if open
-        // Optionally pause music when returning to start
-        // pauseMusic();
+        closeSideMenu();
+        // pauseMusic(); // Optional: Pause music on return to main menu
     }
 
     function navigateToGame() {
         showScreen('game');
-        initGame(); // Initialize or re-initialize the game
-        // Attempt to play music if preference is set to true
+        initGame();
         if (musicToggleMenu.checked) {
-            playMusic();
+            playMusic(); // Attempt to play if preference is enabled
         }
     }
 
     // --- Menu Functions ---
-    function openSideMenu() {
+    // (Keep the menu functions as they are)
+     function openSideMenu() {
         sideMenu.classList.add('open');
         menuToggleButton.classList.add('open');
     }
@@ -144,40 +169,57 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Game Initialization ---
     function initGame() {
         // 1. Reset Variables
-        targetWord = getRandomWord(wordList);
-        wordLength = targetWord.length;
+        targetWord = getRandomWord(wordList); // Select a new random word
+        wordLength = targetWord.length;        // Update word length based on the selected word
         currentRowIndex = 0;
         isGameOver = false;
-        console.log("Jawaban (untuk testing):", targetWord);
+        console.log("Jawaban (untuk testing):", targetWord); // For debugging
 
         // 2. Reset UI Elements
-        gameBoard.innerHTML = ''; // Clear previous board
+        gameBoard.innerHTML = '';
         messageArea.textContent = '';
-        messageArea.className = 'message-area'; // Reset classes
+        messageArea.className = 'message-area';
         guessInput.value = '';
-        guessInput.maxLength = wordLength;
+        guessInput.maxLength = wordLength; // Set input max length dynamically
         guessInput.disabled = false;
         submitButton.disabled = false;
         tryAgainButton.style.display = 'none';
-        updateGuessesLeft(); // Update guesses display
+        updateGuessesLeft();
 
-        // 3. Create New Grid
+        // 3. Create New Grid (adapts to wordLength)
         createGuessGrid(wordLength);
 
         // 4. Focus Input
         guessInput.focus();
     }
 
+    /**
+     * Selects a random word from the provided list.
+     * Uses Math.random(), which is efficient and suitable for this purpose.
+     * A larger word list provides better perceived randomness.
+     */
     function getRandomWord(list) {
+        if (!list || list.length === 0) {
+            console.error("Word list is empty!");
+            return "ERROR"; // Return a default or handle error appropriately
+        }
         const randomIndex = Math.floor(Math.random() * list.length);
-        return list[randomIndex].toUpperCase();
+        return list[randomIndex]; // Already ensured to be uppercase
     }
 
+    /**
+     * Creates the visual grid for guesses based on max attempts and word length.
+     */
     function createGuessGrid(length) {
+        // Set grid container styles based on dimensions
         gameBoard.style.gridTemplateRows = `repeat(${maxGuesses}, 1fr)`;
+        // Optional: Adjust column template if needed, though 1fr usually works well
+        // gameBoard.style.gridTemplateColumns = `repeat(${length}, 1fr)`;
+
         for (let i = 0; i < maxGuesses; i++) {
             const row = document.createElement('div');
             row.classList.add('guess-row');
+            // Set columns for *this specific row* based on word length
             row.style.gridTemplateColumns = `repeat(${length}, 1fr)`;
             for (let j = 0; j < length; j++) {
                 const box = document.createElement('div');
@@ -206,28 +248,36 @@ document.addEventListener('DOMContentLoaded', () => {
             shakeInput();
             return;
         }
-        if (!/^[A-Z]+$/.test(guess)) {
+        if (!/^[A-Z]+$/.test(guess)) { // Simple check for letters only
              showMessage('Hanya boleh huruf A-Z', 'error');
              shakeInput();
              return;
         }
+        // Optional: Add dictionary check here if needed in the future
 
         // Process guess
-        submitButton.disabled = true; // Disable during check
-        displayGuess(guess); // Show letters immediately
-        checkGuess(guess); // Start animation and logic
-        updateGuessesLeft(); // Update remaining guesses count visually
+        submitButton.disabled = true; // Prevent double submission while checking
+        displayGuess(guess);
+        checkGuess(guess); // This function now handles the rest of the turn flow
+        // Note: updateGuessesLeft() is called *after* checkGuess finishes its async operations or immediately in endGame
     }
 
+    /**
+     * Displays the guessed letters immediately in the current row's boxes.
+     */
     function displayGuess(guess) {
         const row = gameBoard.children[currentRowIndex];
-        if (!row) return;
+        if (!row) return; // Should not happen if logic is correct
         const boxes = row.children;
         for (let i = 0; i < guess.length; i++) {
             if (boxes[i]) boxes[i].textContent = guess[i];
         }
     }
 
+    /**
+     * Checks the guess against the target word, applies animations,
+     * and determines the next game state (win, lose, continue).
+     */
     function checkGuess(guess) {
         const row = gameBoard.children[currentRowIndex];
         if (!row) return;
@@ -235,96 +285,119 @@ document.addEventListener('DOMContentLoaded', () => {
         const guessLetters = guess.split('');
         const targetLetters = targetWord.split('');
 
-        // Calculate Status (Correct, Present, Absent) - Logic remains the same
-        const letterStatus = Array(wordLength).fill(null);
-        const targetLetterCounts = {};
-        targetLetters.forEach(letter => { targetLetterCounts[letter] = (targetLetterCounts[letter] || 0) + 1; });
+        // Standard Wordle Logic: Determine letter status (correct, present, absent)
+        const letterStatus = Array(wordLength).fill(null); // Stores 'correct', 'present', or 'absent' for each letter
+        const targetLetterCounts = {}; // To handle duplicate letters correctly
 
-        // 1. Check Correct (Green)
+        // Count target letters
+        targetLetters.forEach(letter => {
+            targetLetterCounts[letter] = (targetLetterCounts[letter] || 0) + 1;
+        });
+
+        // First pass: Check for CORRECT letters (green)
         for (let i = 0; i < wordLength; i++) {
             if (guessLetters[i] === targetLetters[i]) {
                 letterStatus[i] = 'correct';
-                targetLetterCounts[guessLetters[i]]--;
+                targetLetterCounts[guessLetters[i]]--; // Decrement count for this exact match
             }
         }
-        // 2. Check Present (Yellow) & Absent (Grey)
+
+        // Second pass: Check for PRESENT (yellow) and ABSENT (grey) letters
         for (let i = 0; i < wordLength; i++) {
+            // Only check letters not already marked 'correct'
             if (letterStatus[i] === null) {
+                // Check if the letter exists elsewhere in the target AND hasn't been fully matched yet
                 if (targetLetters.includes(guessLetters[i]) && targetLetterCounts[guessLetters[i]] > 0) {
                     letterStatus[i] = 'present';
-                    targetLetterCounts[guessLetters[i]]--;
+                    targetLetterCounts[guessLetters[i]]--; // Decrement count for this 'present' match
                 } else {
                     letterStatus[i] = 'absent';
                 }
             }
         }
 
-        // Apply Reveal Animation and THEN Status Classes
+        // Apply Reveal Animation and Status Classes Asynchronously
         let revealPromises = [];
         for (let i = 0; i < boxes.length; i++) {
             const box = boxes[i];
             if (!box) continue;
 
             const promise = new Promise(resolve => {
+                 // Stagger the start of the reveal animation
                  setTimeout(() => {
-                    box.classList.add('reveal'); // Start reveal animation
-                    // Add event listener to apply final state *after* reveal animation ends
-                    box.addEventListener('animationend', function applyState(event) {
+                    box.classList.add('reveal'); // Trigger CSS flip animation
+
+                    // Listen for the *end* of the animation to apply the final color state
+                    box.addEventListener('animationend', function applyStateAfterReveal(event) {
+                        // Ensure we're reacting to the intended animation
                         if (event.animationName === 'reveal') {
-                             box.removeEventListener('animationend', applyState); // Clean up listener
-                             box.classList.add(`${letterStatus[i]}-state`); // Add final color class
-                             resolve(); // Resolve promise after state applied
+                             box.removeEventListener('animationend', applyStateAfterReveal); // Important: Clean up listener
+                             box.classList.add(`${letterStatus[i]}-state`); // Add final color class (e.g., 'correct-state')
+                             resolve(); // Signal that this box's animation and state update is complete
                         }
-                    }, { once: true }); // Ensure listener fires only once
-                }, i * 120); // Stagger reveal start (slightly faster)
+                    }, { once: true }); // Use 'once' to auto-remove listener after firing
+                }, i * 120); // Stagger delay (120ms between each box)
             });
             revealPromises.push(promise);
         }
 
-
-        // After all reveal animations and state applications are done
+        // Wait for ALL box animations and state updates in the row to complete
         Promise.all(revealPromises).then(() => {
+             // All boxes in the current row have flipped and colored
              currentRowIndex++;
+             updateGuessesLeft(); // Update counter *after* row is processed
 
              // Check Win/Lose Condition
              if (guess === targetWord) {
-                endGame(true);
+                endGame(true); // Player won
             } else if (currentRowIndex >= maxGuesses) {
-                endGame(false);
+                endGame(false); // Player lost (out of guesses)
             } else {
-                // Game continues
-                if (!isGameOver) {
-                     guessInput.value = '';
-                     submitButton.disabled = false;
-                     guessInput.focus();
+                // Game continues to the next guess
+                if (!isGameOver) { // Ensure game hasn't ended unexpectedly
+                     guessInput.value = '';      // Clear input for next guess
+                     submitButton.disabled = false; // Re-enable submit button
+                     guessInput.focus();        // Focus input for convenience
                 }
             }
         });
     }
 
+    /**
+     * Handles the end of the game (win or lose).
+     */
     function endGame(isWin) {
         isGameOver = true;
         guessInput.disabled = true;
         submitButton.disabled = true;
+        // Make sure guesses left shows 0 if max guesses were reached
+        updateGuessesLeft();
+
 
         if (isWin) {
             showMessage(`Horeee! Benar! Jawabannya: ${targetWord}`, 'win');
-            animateWinRow();
-             setTimeout(() => tryAgainButton.style.display = 'block', 1500); // Show button after celebration
+            animateWinRow(); // Trigger win animation on the correct row
+             // Delay showing 'Try Again' slightly for the win animation
+             setTimeout(() => {
+                 if (tryAgainButton) tryAgainButton.style.display = 'block';
+             }, 1500); // Adjust timing as needed
         } else {
              showMessage(`Yaaah.. Belum berhasil :( Jawabannya: ${targetWord}`, 'lose');
-             tryAgainButton.style.display = 'block'; // Show button immediately on loss
+             // Show 'Try Again' immediately on loss
+             if (tryAgainButton) tryAgainButton.style.display = 'block';
         }
-         updateGuessesLeft(); // Ensure count shows 0 if max guesses reached
     }
 
+    // --- UI Feedback Functions ---
+    // (Keep showMessage, shakeInput, animateWinRow as they are)
     function showMessage(msg, type = 'info') {
         messageArea.textContent = msg;
         messageArea.className = 'message-area'; // Reset base class
-        if (type) messageArea.classList.add(type);
+        if (type) messageArea.classList.add(type); // Add type class (info, error, win, lose)
     }
 
-    function shakeInput() {
+     function shakeInput() {
+        if (guessInput.classList.contains('shake-error')) return; // Prevent overlapping shakes
         guessInput.classList.add('shake-error');
         guessInput.addEventListener('animationend', () => {
             guessInput.classList.remove('shake-error');
@@ -332,21 +405,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function animateWinRow() {
-         const winRowIndex = currentRowIndex - 1;
-         if (winRowIndex < 0) return;
+         const winRowIndex = currentRowIndex - 1; // The row where the win occurred
+         if (winRowIndex < 0 || winRowIndex >= maxGuesses) return; // Safety check
          const winRow = gameBoard.children[winRowIndex];
          if (winRow) {
               const boxes = winRow.children;
               for(let i = 0; i < boxes.length; i++) {
-                  if (boxes[i]) {
-                    boxes[i].style.setProperty('--bounce-delay', `${i * 80}ms`);
-                    boxes[i].classList.add('win-bounce');
-                    // Optional: clean up class after animation
-                     boxes[i].addEventListener('animationend', function winBounceEnd(e) {
+                  const box = boxes[i];
+                  if (box) {
+                    // Add staggered delay via CSS custom property
+                    box.style.setProperty('--bounce-delay', `${i * 80}ms`);
+                    box.classList.add('win-bounce');
+
+                    // Optional: Clean up class and property after animation if needed
+                     box.addEventListener('animationend', function winBounceEnd(e) {
                           if (e.animationName === 'win-bounce') {
-                               boxes[i].classList.remove('win-bounce');
-                               boxes[i].style.removeProperty('--bounce-delay');
-                               boxes[i].removeEventListener('animationend', winBounceEnd);
+                               box.classList.remove('win-bounce');
+                               box.style.removeProperty('--bounce-delay');
+                               box.removeEventListener('animationend', winBounceEnd);
                           }
                      }, { once: true });
                   }
@@ -355,23 +431,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Event Listeners ---
+    // (Keep Event Listeners as they are)
     window.addEventListener('load', () => {
-        createBubbles(); // Create background bubbles
-        // Loading -> Start transition
+        createBubbles();
         setTimeout(() => {
             showScreen('start');
-            loadMusicPreference(); // Load setting when UI ready
-        }, 4500); // Adjust loading time if needed (matches loader animation)
+            loadMusicPreference();
+        }, 4500); // Match loading animation duration
     });
 
-    // Start Game
     startButton.addEventListener('click', navigateToGame);
-
-    // In-Game Actions
     guessForm.addEventListener('submit', handleGuessSubmit);
-    tryAgainButton.addEventListener('click', initGame); // Restart game logic
+    tryAgainButton.addEventListener('click', initGame);
 
-    // Menu Interactions
     menuToggleButton.addEventListener('click', () => {
         if (sideMenu.classList.contains('open')) {
             closeSideMenu();
@@ -384,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
     returnToMainMenuButton.addEventListener('click', navigateToStartScreen);
 
 
-    // Initial Setup
-    showScreen('loading'); // Start with loading screen
+    // --- Initial Setup ---
+    showScreen('loading'); // Start with the loading screen
 
-});
+})
