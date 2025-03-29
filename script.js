@@ -1,233 +1,244 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Variabel Global ---
-    const wordList = ["CAHAYA", "TAUHID", "MANDI", "ROBLOX", "JALAN", "SIGMA", "PUASA", "LAPAR", "DASI", "BERENANG", "MUNGKIN", "KATAK", "LUCU", "IMUT", "KEREN"]; // Added more words
+    const wordList = ["CAHAYA", "TAUHID", "MANDI", "ROBLOX", "JALAN", "SIGMA", "PUASA", "LAPAR", "DASI", "BERENANG", "MUNGKIN", "KATAK", "LUCU", "IMUT", "KEREN", "MANIS", "PINK", "UNGGU", "GEMAS"]; // Added more words
     let targetWord = '';
-    let currentGuess = '';
+    // let currentGuess = ''; // Not strictly needed as we read from input directly
     let currentRowIndex = 0;
-    const maxGuesses = 7; // Consistent with CSS grid rows
+    const maxGuesses = 7;
     let isGameOver = false;
-    let isMusicPlaying = false; // Track music state
-    let wordLength = 5; // Default, will be set by targetWord
+    let isMusicPlaying = false;
+    let wordLength = 5; // Default, updated by targetWord
 
-    // --- Referensi Elemen DOM ---
+    // --- DOM References ---
+    // Screens & Containers
     const loadingScreen = document.getElementById('loading-screen');
     const startScreen = document.getElementById('start-screen');
     const gameContainer = document.querySelector('.game-container');
-    const startButton = document.getElementById('start-button');
-    const settingsButton = document.getElementById('settings-button');
-    const settingsModal = document.getElementById('settings-modal');
-    const closeModalButton = settingsModal.querySelector('.close-button');
-    const musicToggle = document.getElementById('music-toggle');
-    const backgroundMusic = document.getElementById('background-music');
+    const bubblesBackground = document.querySelector('.bubbles-background'); // Ref for bubbles
 
+    // Start Screen Elements
+    const startButton = document.getElementById('start-button');
+
+    // Game Elements
     const gameBoard = document.getElementById('game-board');
     const guessInput = document.getElementById('guess-input');
     const guessForm = document.getElementById('guess-form');
     const messageArea = document.getElementById('message-area');
     const tryAgainButton = document.getElementById('try-again-button');
     const submitButton = document.getElementById('submit-button');
+    const guessesLeftSpan = document.getElementById('guesses-left'); // Span for guesses left
 
-    // --- Fungsi Audio ---
+    // Menu Elements
+    const menuToggleButton = document.getElementById('menu-toggle');
+    const sideMenu = document.getElementById('side-menu');
+    const musicToggleMenu = document.getElementById('music-toggle-menu');
+    const returnToMainMenuButton = document.getElementById('return-to-main-menu');
+    const closeMenuButton = sideMenu.querySelector('.close-menu-button');
+
+    // Audio
+    const backgroundMusic = document.getElementById('background-music');
+
+    // --- Bubble Creation ---
+    function createBubbles() {
+        bubblesBackground.innerHTML = ''; // Clear existing bubbles if any
+        const numberOfBubbles = 10; // Match CSS approx
+        for (let i = 0; i < numberOfBubbles; i++) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            // Set random size, position, duration - can override CSS slightly
+             const size = Math.random() * 80 + 20; // 20px to 100px
+             bubble.style.width = `${size}px`;
+             bubble.style.height = `${size}px`;
+             bubble.style.left = `${Math.random() * 95}%`; // Position across width
+             bubble.style.animationDuration = `${Math.random() * 10 + 10}s`; // 10s to 20s
+             bubble.style.animationDelay = `${Math.random() * 5}s`; // 0s to 5s delay
+            bubblesBackground.appendChild(bubble);
+        }
+    }
+
+    // --- Audio Functions ---
     function playMusic() {
+        if (!backgroundMusic) return; // Safety check
         backgroundMusic.play().then(() => {
             isMusicPlaying = true;
-            musicToggle.checked = true; // Sync toggle state
-            localStorage.setItem('musicEnabled', 'true'); // Save preference
+            musicToggleMenu.checked = true;
+            localStorage.setItem('musicEnabled', 'true');
+            console.log("Music playing.");
         }).catch(error => {
-            // Autoplay might be blocked, user interaction needed
-            console.warn("Music autoplay blocked:", error);
+            console.warn("Music autoplay blocked or failed:", error);
             isMusicPlaying = false;
-            musicToggle.checked = false;
-             localStorage.setItem('musicEnabled', 'false');
-            // Optionally show a message to the user to enable sound manually
+            musicToggleMenu.checked = false;
+            localStorage.setItem('musicEnabled', 'false');
+            // Can't reliably show message here as it might be before game starts
         });
     }
 
     function pauseMusic() {
+         if (!backgroundMusic) return;
         backgroundMusic.pause();
         isMusicPlaying = false;
-        musicToggle.checked = false; // Sync toggle state
-        localStorage.setItem('musicEnabled', 'false'); // Save preference
+        musicToggleMenu.checked = false;
+        localStorage.setItem('musicEnabled', 'false');
+        console.log("Music paused.");
     }
 
     function toggleMusic() {
         if (isMusicPlaying) {
             pauseMusic();
         } else {
-             // Try playing immediately when toggled on
-             backgroundMusic.play().then(() => {
-                isMusicPlaying = true;
-                localStorage.setItem('musicEnabled', 'true');
-            }).catch(error => {
-                console.warn("Music play failed on toggle:", error);
-                isMusicPlaying = false;
-                musicToggle.checked = false; // Revert toggle if play fails
-                localStorage.setItem('musicEnabled', 'false');
-                showMessage("Klik di mana saja untuk mengaktifkan musik", "info"); // Prompt user
-            });
+             // Try playing - user interaction via toggle counts
+             playMusic();
         }
     }
 
-    // Load music preference from localStorage
     function loadMusicPreference() {
         const musicEnabled = localStorage.getItem('musicEnabled');
-        if (musicEnabled === 'true') {
-             // Don't autoplay immediately, wait for start button or toggle
-             musicToggle.checked = true;
-             // isMusicPlaying will be set correctly when playMusic is called
-        } else {
-            musicToggle.checked = false;
-            isMusicPlaying = false; // Ensure it's false if not enabled
+        // Set the toggle state based on preference
+        musicToggleMenu.checked = (musicEnabled === 'true');
+        // We will attempt to play only after the start button is clicked if enabled
+        console.log("Music preference loaded:", musicEnabled);
+    }
+
+    // --- UI Flow & Navigation ---
+    function showScreen(screenToShow) {
+        loadingScreen.classList.add('hidden');
+        startScreen.classList.add('hidden');
+        gameContainer.style.display = 'none'; // Hide game container
+
+        if (screenToShow === 'loading') {
+            loadingScreen.classList.remove('hidden');
+        } else if (screenToShow === 'start') {
+            startScreen.classList.remove('hidden');
+        } else if (screenToShow === 'game') {
+            gameContainer.style.display = 'block'; // Show game container
         }
     }
 
-
-    // --- Fungsi Inisialisasi & UI Flow ---
-
-    function showLoadingScreen() {
-        loadingScreen.classList.remove('hidden');
+    function navigateToStartScreen() {
+        showScreen('start');
+        closeSideMenu(); // Close menu if open
+        // Optionally pause music when returning to start
+        // pauseMusic();
     }
 
-    function hideLoadingScreen() {
-        loadingScreen.classList.add('hidden');
+    function navigateToGame() {
+        showScreen('game');
+        initGame(); // Initialize or re-initialize the game
+        // Attempt to play music if preference is set to true
+        if (musicToggleMenu.checked) {
+            playMusic();
+        }
     }
 
-    function showStartScreen() {
-        startScreen.classList.remove('hidden');
-        gameContainer.style.display = 'none'; // Ensure game is hidden
+    // --- Menu Functions ---
+    function openSideMenu() {
+        sideMenu.classList.add('open');
+        menuToggleButton.classList.add('open');
     }
 
-    function hideStartScreen() {
-        startScreen.classList.add('hidden');
-        gameContainer.style.display = 'block'; // Show game
+    function closeSideMenu() {
+        sideMenu.classList.remove('open');
+        menuToggleButton.classList.remove('open');
     }
 
-    function showSettingsModal() {
-        settingsModal.style.display = 'flex'; // Use flex to enable centering
-         setTimeout(() => settingsModal.classList.add('visible'), 10); // Allow display change before transition
-    }
-
-    function hideSettingsModal() {
-         settingsModal.classList.remove('visible');
-         // Wait for transition before setting display none
-         setTimeout(() => settingsModal.style.display = 'none', 300); // Match CSS transition duration
-    }
-
-
-    // Inisialisasi Permainan Baru (Called AFTER start button)
+    // --- Game Initialization ---
     function initGame() {
-        // 1. Reset Variabel
+        // 1. Reset Variables
         targetWord = getRandomWord(wordList);
-        wordLength = targetWord.length; // Update word length
-        currentGuess = '';
+        wordLength = targetWord.length;
         currentRowIndex = 0;
         isGameOver = false;
         console.log("Jawaban (untuk testing):", targetWord);
 
-        // 2. Reset Tampilan
-        gameBoard.innerHTML = ''; // Kosongkan papan
+        // 2. Reset UI Elements
+        gameBoard.innerHTML = ''; // Clear previous board
         messageArea.textContent = '';
-        messageArea.className = ''; // Reset class
+        messageArea.className = 'message-area'; // Reset classes
         guessInput.value = '';
-        guessInput.maxLength = wordLength; // Set correct max length
-        guessInput.disabled = false; // Enable input
-        submitButton.disabled = false; // Enable button
+        guessInput.maxLength = wordLength;
+        guessInput.disabled = false;
+        submitButton.disabled = false;
         tryAgainButton.style.display = 'none';
+        updateGuessesLeft(); // Update guesses display
 
-        // 3. Buat Grid Tebakan
+        // 3. Create New Grid
         createGuessGrid(wordLength);
 
-        // 4. Fokus ke input
+        // 4. Focus Input
         guessInput.focus();
     }
 
-    // Memilih Kata Acak
     function getRandomWord(list) {
         const randomIndex = Math.floor(Math.random() * list.length);
         return list[randomIndex].toUpperCase();
     }
 
-    // Membuat Grid Kotak Tebakan
     function createGuessGrid(length) {
-        gameBoard.style.gridTemplateRows = `repeat(${maxGuesses}, 1fr)`; // Ensure row count is correct
-
+        gameBoard.style.gridTemplateRows = `repeat(${maxGuesses}, 1fr)`;
         for (let i = 0; i < maxGuesses; i++) {
             const row = document.createElement('div');
             row.classList.add('guess-row');
-            row.style.gridTemplateColumns = `repeat(${length}, 1fr)`; // Set column count
-
+            row.style.gridTemplateColumns = `repeat(${length}, 1fr)`;
             for (let j = 0; j < length; j++) {
                 const box = document.createElement('div');
                 box.classList.add('letter-box');
-                // Store row/col for potential future use, though not strictly needed now
-                box.setAttribute('data-row', i);
-                box.setAttribute('data-col', j);
                 row.appendChild(box);
             }
             gameBoard.appendChild(row);
         }
     }
 
-    // --- Fungsi Gameplay ---
+     function updateGuessesLeft() {
+        const remaining = maxGuesses - currentRowIndex;
+        guessesLeftSpan.textContent = remaining >= 0 ? remaining : 0;
+    }
 
-    // Menangani Pengiriman Tebakan
+    // --- Gameplay Functions ---
     function handleGuessSubmit(event) {
         event.preventDefault();
-        if (isGameOver || submitButton.disabled) return; // Extra check for disabled state
+        if (isGameOver || submitButton.disabled) return;
 
         const guess = guessInput.value.toUpperCase().trim();
 
-        // --- Validasi Input ---
+        // Validation
         if (guess.length !== wordLength) {
-            showMessage(`Tebakan harus ${wordLength} huruf!`, 'error');
+            showMessage(`Harus ${wordLength} huruf ya!`, 'error');
             shakeInput();
             return;
         }
         if (!/^[A-Z]+$/.test(guess)) {
-             showMessage('Hanya huruf yang diperbolehkan!', 'error');
+             showMessage('Hanya boleh huruf A-Z', 'error');
              shakeInput();
              return;
         }
-        // TODO: Add dictionary check if available
 
-        // --- Proses Tebakan ---
-        submitButton.disabled = true; // Disable button during processing/animation
-        displayGuess(guess); // Show letters immediately (before reveal)
-        checkGuess(guess); // Start the reveal and coloring process
-
-        // Re-enable button after animations (adjust timing if needed)
-        // setTimeout(() => {
-        //     if (!isGameOver) submitButton.disabled = false;
-        // }, wordLength * 150 + 600); // Wait for letter reveal + animation time
+        // Process guess
+        submitButton.disabled = true; // Disable during check
+        displayGuess(guess); // Show letters immediately
+        checkGuess(guess); // Start animation and logic
+        updateGuessesLeft(); // Update remaining guesses count visually
     }
 
-
-    // Menampilkan Tebakan di Grid (Just the letters initially)
     function displayGuess(guess) {
         const row = gameBoard.children[currentRowIndex];
-        if (!row) return; // Safety check
+        if (!row) return;
         const boxes = row.children;
         for (let i = 0; i < guess.length; i++) {
-             if (boxes[i]) {
-                 boxes[i].textContent = guess[i];
-             }
+            if (boxes[i]) boxes[i].textContent = guess[i];
         }
     }
 
-    // Memeriksa Tebakan, Menerapkan Reveal dan Warna
     function checkGuess(guess) {
         const row = gameBoard.children[currentRowIndex];
-        if (!row) return; // Safety check
+        if (!row) return;
         const boxes = row.children;
         const guessLetters = guess.split('');
         const targetLetters = targetWord.split('');
 
-        // --- Status Calculation (Same logic as before) ---
+        // Calculate Status (Correct, Present, Absent) - Logic remains the same
         const letterStatus = Array(wordLength).fill(null);
         const targetLetterCounts = {};
-        targetLetters.forEach(letter => {
-            targetLetterCounts[letter] = (targetLetterCounts[letter] || 0) + 1;
-        });
+        targetLetters.forEach(letter => { targetLetterCounts[letter] = (targetLetterCounts[letter] || 0) + 1; });
 
         // 1. Check Correct (Green)
         for (let i = 0; i < wordLength; i++) {
@@ -236,10 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 targetLetterCounts[guessLetters[i]]--;
             }
         }
-
-        // 2. Check Present (Yellow) & Absent (Red/Grey)
+        // 2. Check Present (Yellow) & Absent (Grey)
         for (let i = 0; i < wordLength; i++) {
-            if (letterStatus[i] === null) { // Only check if not already 'correct'
+            if (letterStatus[i] === null) {
                 if (targetLetters.includes(guessLetters[i]) && targetLetterCounts[guessLetters[i]] > 0) {
                     letterStatus[i] = 'present';
                     targetLetterCounts[guessLetters[i]]--;
@@ -249,44 +259,42 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // --- Apply Reveal and Status Classes with Delay ---
-        let animationPromises = []; // Track animations
-
+        // Apply Reveal Animation and THEN Status Classes
+        let revealPromises = [];
         for (let i = 0; i < boxes.length; i++) {
             const box = boxes[i];
-            if (!box) continue; // Safety
+            if (!box) continue;
 
             const promise = new Promise(resolve => {
-                setTimeout(() => {
-                    box.classList.add('reveal'); // Trigger reveal animation
-                    box.classList.add(letterStatus[i]); // Add status class (used by CSS variable in reveal)
-
-                    // Listen for animation end to resolve the promise
-                    box.addEventListener('animationend', function handler(e) {
-                         // Make sure it's the reveal animation ending
-                         if (e.animationName === 'reveal') {
-                            box.removeEventListener('animationend', handler); // Clean up listener
-                            resolve(); // Signal this box's animation is done
-                         }
-                    }, { once: true }); // Use once for automatic cleanup alternative
-                }, i * 150); // Stagger the start of reveal animation
+                 setTimeout(() => {
+                    box.classList.add('reveal'); // Start reveal animation
+                    // Add event listener to apply final state *after* reveal animation ends
+                    box.addEventListener('animationend', function applyState(event) {
+                        if (event.animationName === 'reveal') {
+                             box.removeEventListener('animationend', applyState); // Clean up listener
+                             box.classList.add(`${letterStatus[i]}-state`); // Add final color class
+                             resolve(); // Resolve promise after state applied
+                        }
+                    }, { once: true }); // Ensure listener fires only once
+                }, i * 120); // Stagger reveal start (slightly faster)
             });
-            animationPromises.push(promise);
+            revealPromises.push(promise);
         }
 
-        // --- After all animations complete ---
-        Promise.all(animationPromises).then(() => {
-            currentRowIndex++; // Move to next row *after* animations
 
-             // Check win/lose condition
+        // After all reveal animations and state applications are done
+        Promise.all(revealPromises).then(() => {
+             currentRowIndex++;
+
+             // Check Win/Lose Condition
              if (guess === targetWord) {
                 endGame(true);
             } else if (currentRowIndex >= maxGuesses) {
                 endGame(false);
             } else {
-                // Game continues: Re-enable input and button
+                // Game continues
                 if (!isGameOver) {
-                     guessInput.value = ''; // Clear input for next guess
+                     guessInput.value = '';
                      submitButton.disabled = false;
                      guessInput.focus();
                 }
@@ -294,115 +302,89 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
-    // Mengakhiri Permainan
     function endGame(isWin) {
         isGameOver = true;
         guessInput.disabled = true;
-        submitButton.disabled = true; // Ensure it remains disabled
+        submitButton.disabled = true;
 
         if (isWin) {
-            showMessage(`Selamat! Kamu berhasil menebak: ${targetWord}`, 'win');
-            animateWinRow(); // Trigger win animation
+            showMessage(`Horeee! Benar! Jawabannya: ${targetWord}`, 'win');
+            animateWinRow();
+             setTimeout(() => tryAgainButton.style.display = 'block', 1500); // Show button after celebration
         } else {
-            showMessage(`Yah, kesempatan habis! Jawabannya: ${targetWord}`, 'lose');
+             showMessage(`Yaaah.. Belum berhasil :( Jawabannya: ${targetWord}`, 'lose');
+             tryAgainButton.style.display = 'block'; // Show button immediately on loss
         }
-
-        tryAgainButton.style.display = 'block'; // Tampilkan tombol Coba Lagi
+         updateGuessesLeft(); // Ensure count shows 0 if max guesses reached
     }
 
-    // Menampilkan Pesan Status
     function showMessage(msg, type = 'info') {
         messageArea.textContent = msg;
-        // Clear previous types before adding the new one
-        messageArea.classList.remove('win', 'lose', 'error', 'info');
-        if (type) {
-            messageArea.classList.add(type);
-        }
+        messageArea.className = 'message-area'; // Reset base class
+        if (type) messageArea.classList.add(type);
     }
 
-    // Animasi Goyang untuk Input Salah
     function shakeInput() {
         guessInput.classList.add('shake-error');
         guessInput.addEventListener('animationend', () => {
             guessInput.classList.remove('shake-error');
-        }, { once: true }); // Remove class after animation ends
+        }, { once: true });
     }
 
-    // Animasi baris kemenangan (Refactored to use CSS classes)
     function animateWinRow() {
-         // The winning row is the one just completed
          const winRowIndex = currentRowIndex - 1;
-         if (winRowIndex < 0) return; // Should not happen, but safety first
-
+         if (winRowIndex < 0) return;
          const winRow = gameBoard.children[winRowIndex];
          if (winRow) {
               const boxes = winRow.children;
               for(let i = 0; i < boxes.length; i++) {
                   if (boxes[i]) {
-                    // Set custom property for staggered delay
                     boxes[i].style.setProperty('--bounce-delay', `${i * 80}ms`);
                     boxes[i].classList.add('win-bounce');
-                    // Clean up class after animation (optional, but good practice)
-                    boxes[i].addEventListener('animationend', function handler(e) {
-                         if (e.animationName === 'win-bounce') {
-                             boxes[i].classList.remove('win-bounce');
-                             boxes[i].style.removeProperty('--bounce-delay');
-                             boxes[i].removeEventListener('animationend', handler);
-                         }
-                    }, { once: true });
+                    // Optional: clean up class after animation
+                     boxes[i].addEventListener('animationend', function winBounceEnd(e) {
+                          if (e.animationName === 'win-bounce') {
+                               boxes[i].classList.remove('win-bounce');
+                               boxes[i].style.removeProperty('--bounce-delay');
+                               boxes[i].removeEventListener('animationend', winBounceEnd);
+                          }
+                     }, { once: true });
                   }
               }
          }
     }
 
-
     // --- Event Listeners ---
-
-    // Loading -> Start Screen Transition
     window.addEventListener('load', () => {
-         // Simulate loading time or wait for assets
-         setTimeout(() => {
-             hideLoadingScreen();
-             showStartScreen();
-             loadMusicPreference(); // Load setting after UI is ready
-         }, 5000); // Adjust delay (5 seconds) to match loader animation
+        createBubbles(); // Create background bubbles
+        // Loading -> Start transition
+        setTimeout(() => {
+            showScreen('start');
+            loadMusicPreference(); // Load setting when UI ready
+        }, 4500); // Adjust loading time if needed (matches loader animation)
     });
 
-    // Start Button
-    startButton.addEventListener('click', () => {
-        hideStartScreen();
-        initGame();
-        // Try to play music if it was enabled
-        if (musicToggle.checked) {
-            playMusic();
-        }
-    });
+    // Start Game
+    startButton.addEventListener('click', navigateToGame);
 
-    // Settings Button
-    settingsButton.addEventListener('click', showSettingsModal);
-    closeModalButton.addEventListener('click', hideSettingsModal);
-    // Close modal if clicking outside the content
-    settingsModal.addEventListener('click', (event) => {
-        if (event.target === settingsModal) {
-            hideSettingsModal();
-        }
-    });
-
-    // Music Toggle
-    musicToggle.addEventListener('change', toggleMusic);
-
-    // Game Actions
+    // In-Game Actions
     guessForm.addEventListener('submit', handleGuessSubmit);
-    tryAgainButton.addEventListener('click', () => {
-        initGame(); // Re-initialize the game
-        if (musicToggle.checked && !isMusicPlaying) {
-             // If music should be on but isn't (e.g., after page reload)
-             playMusic();
+    tryAgainButton.addEventListener('click', initGame); // Restart game logic
+
+    // Menu Interactions
+    menuToggleButton.addEventListener('click', () => {
+        if (sideMenu.classList.contains('open')) {
+            closeSideMenu();
+        } else {
+            openSideMenu();
         }
     });
+    closeMenuButton.addEventListener('click', closeSideMenu);
+    musicToggleMenu.addEventListener('change', toggleMusic);
+    returnToMainMenuButton.addEventListener('click', navigateToStartScreen);
 
-    // Initial Setup - Don't call initGame here, wait for Start button
-    showLoadingScreen(); // Show loader immediately
+
+    // Initial Setup
+    showScreen('loading'); // Start with loading screen
 
 });
