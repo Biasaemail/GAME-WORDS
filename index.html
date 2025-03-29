@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tebak Kata Dnegan</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Impor Font Lucu dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1 class="title">TEBAK KATA Dnegan</h1>
+            <p class="instructions">
+                Tebak kata tersembunyi dalam 7 kali percobaan! <br>
+                Hijau: Huruf & posisi benar. Kuning: Huruf benar, posisi salah. Merah: Huruf salah.
+            </p>
+        </header>
+
+        <main id="game-board">
+            <!-- Kotak tebakan akan digenerate oleh JavaScript -->
+        </main>
+
+        <div id="input-area">
+             <form id="guess-form">
+                <input
+                    type="text"
+                    id="guess-input"
+                    maxlength="5"  <!-- Akan diupdate oleh JS -->
+                    autocomplete="off"
+                    aria-label="Masukkan tebakannya disini"
+                    placeholder="Ketik tebakanmu..."
+                >
+                <button type="submit" id="submit-button">Tebak</button>
+             </form>
+        </div>
+
+        <div id="message-area" role="alert" aria-live="polite">
+            <!-- Pesan status permainan akan muncul di sini -->
+        </div>
+
+        <button id="try-again-button" style="display: none;">Coba Lagi</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
