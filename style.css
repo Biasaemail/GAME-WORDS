@@ -9,688 +9,420 @@ html {
     height: 100%;
 }
 
+/* Font Definitions */
+.lilita-font { font-family: 'Lilita One', cursive; }
+.nunito-font { font-family: 'Nunito', sans-serif; }
+.pacifico-font { font-family: 'Pacifico', cursive; } /* Cute Font */
+
 body {
     font-family: 'Nunito', sans-serif;
-    display: flex; /* Changed: Flex handled by screens now */
+    display: flex;
     justify-content: center;
-    align-items: center; /* Center vertically too */
+    align-items: center;
     min-height: 100vh;
-    /* padding-top: 30px; Removed: Padding handled by containers */
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Cg fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Cpath d="M0 38.59l2.83-2.83 1.41 1.41L1.41 40H0v-1.41zM0 1.4l2.83 2.83 1.41-1.41L1.41 0H0v1.41zM38.59 40l-2.83-2.83 1.41-1.41L40 38.59V40h-1.41zM40 1.41l-2.83 2.83-1.41-1.41L38.59 0H40v1.41zM20 18.6l2.83-2.83 1.41 1.41L21.41 20l2.83 2.83-1.41 1.41L20 21.41l-2.83 2.83-1.41-1.41L18.59 20l-2.83-2.83 1.41-1.41L20 18.59z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
     color: #333;
-    overflow-x: hidden;
-    overflow-y: auto; /* Allow vertical scroll if content overflows */
-    position: relative; /* Needed for absolute positioning of screens */
+    overflow: hidden; /* Hide body scrollbars, manage overflow internally */
+    position: relative; /* Needed for absolute positioning of bubbles/screens */
+    /* !! New Background !! */
+    background: linear-gradient(145deg, #ff85e4 0%, #aa77ff 100%); /* Pink to Purple Gradient */
 }
 
-/* --- Loading Screen Styles --- */
-#loading-screen {
-    position: fixed; /* Cover whole screen */
+/* --- Bubble Background --- */
+.bubbles-background {
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* Match body */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Above everything */
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
+    overflow: hidden; /* Contain bubbles */
+    z-index: -1; /* Behind everything */
 }
 
-#loading-screen.hidden {
-    opacity: 0;
-    pointer-events: none; /* Disable interaction when hidden */
-}
-
-.loader-container {
-    position: relative;
-    width: 150px;
-    height: 150px;
-    margin-bottom: 20px;
-}
-
-.loader-planet {
+.bubble {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 60px;
-    height: 60px;
-    background: #ff8a8a; /* Cute color */
+    background-color: rgba(255, 255, 255, 0.15); /* Semi-transparent white */
     border-radius: 50%;
+    bottom: -150px; /* Start below screen */
+    animation: rise 10s infinite ease-in;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+/* Create multiple bubbles with varying sizes and animation delays */
+.bubble:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-duration: 12s; animation-delay: 0s; }
+.bubble:nth-child(2) { width: 40px; height: 40px; left: 20%; animation-duration: 15s; animation-delay: 1s; }
+.bubble:nth-child(3) { width: 60px; height: 60px; left: 35%; animation-duration: 10s; animation-delay: 2s; }
+.bubble:nth-child(4) { width: 90px; height: 90px; left: 50%; animation-duration: 18s; animation-delay: 0.5s; }
+.bubble:nth-child(5) { width: 35px; height: 35px; left: 65%; animation-duration: 11s; animation-delay: 3s; }
+.bubble:nth-child(6) { width: 50px; height: 50px; left: 80%; animation-duration: 13s; animation-delay: 1.5s; }
+.bubble:nth-child(7) { width: 70px; height: 70px; left: 90%; animation-duration: 9s; animation-delay: 2.5s; }
+.bubble:nth-child(8) { width: 45px; height: 45px; left: 5%; animation-duration: 16s; animation-delay: 4s; }
+.bubble:nth-child(9) { width: 100px; height: 100px; left: 25%; animation-duration: 20s; animation-delay: 5s; }
+.bubble:nth-child(10) { width: 55px; height: 55px; left: 75%; animation-duration: 14s; animation-delay: 3.5s; }
+
+@keyframes rise {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(20px); /* Slight horizontal drift */
+    }
+    100% {
+        transform: translateY(-120vh) translateX(-20px); /* Rise well above the screen */
+        opacity: 0;
+    }
+}
+
+
+/* --- Loading Screen Styles (Minor Adjustments) --- */
+#loading-screen {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(145deg, #ff85e4 0%, #aa77ff 100%); /* Match new background */
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 1000; opacity: 1; transition: opacity 0.5s ease-out;
+}
+#loading-screen.hidden { opacity: 0; pointer-events: none; }
+.loader-container { position: relative; width: 150px; height: 150px; margin-bottom: 20px; }
+.loader-planet {
+    position: absolute; top: 50%; left: 50%; width: 60px; height: 60px;
+    background: #ffabe1; /* Lighter pink */ border-radius: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 15px rgba(255, 107, 107, 0.7), inset 0 0 10px rgba(0,0,0,0.2);
+    box-shadow: 0 0 15px rgba(255, 171, 225, 0.7), inset 0 0 10px rgba(0,0,0,0.2);
     animation: pulse 1.8s infinite ease-in-out;
 }
-
 .loader-letter {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 25px; /* Size of orbiting letters */
-    height: 25px;
-    margin-left: -12.5px; /* Half width */
-    margin-top: -12.5px; /* Half height */
-    font-family: 'Lilita One', cursive;
-    font-size: 1.8rem;
-    color: #fff;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px; /* Slightly rounded */
-    background: rgba(255, 255, 255, 0.2); /* Subtle background */
+    position: absolute; top: 50%; left: 50%; width: 25px; height: 25px;
+    margin-left: -12.5px; margin-top: -12.5px; font-family: 'Lilita One', cursive;
+    font-size: 1.8rem; color: #fff; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    display: flex; justify-content: center; align-items: center;
+    border-radius: 5px; background: rgba(255, 255, 255, 0.2);
     transform-origin: center center;
-    animation: orbit 4s linear infinite, enterPlanet 1.5s 3.5s ease-in forwards; /* Orbit first, then enter */
+    animation: orbit 4s linear infinite, enterPlanet 1.5s 3.5s ease-in forwards;
 }
-
-/* Stagger the orbit starting points */
 .loader-letter.l1 { animation-delay: 0s, 3.5s; }
 .loader-letter.l2 { animation-delay: -0.8s, 3.6s; }
 .loader-letter.l3 { animation-delay: -1.6s, 3.7s; }
 .loader-letter.l4 { animation-delay: -2.4s, 3.8s; }
 .loader-letter.l5 { animation-delay: -3.2s, 3.9s; }
+#loading-screen p { font-size: 1.2rem; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+@keyframes orbit { /* Keep as is */}
+@keyframes enterPlanet { /* Keep as is */ }
+@keyframes pulse { /* Keep as is - maybe adjust color slightly if needed */ }
 
-#loading-screen p {
-    font-size: 1.2rem;
-    color: #fff;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-}
-
-/* Loading Animations */
-@keyframes orbit {
-    0% { transform: rotateZ(0deg) translateX(70px) rotateZ(0deg) scale(1); } /* Orbit radius */
-    100% { transform: rotateZ(360deg) translateX(70px) rotateZ(-360deg) scale(1); }
-}
-
-@keyframes enterPlanet {
-    0% { transform: translateX(0) translateY(0) scale(1); opacity: 1; } /* Start from final orbit pos */
-    100% { transform: translateX(-50%) translateY(-50%) scale(0); opacity: 0; } /* Move to center & shrink */
-    /* Note: This targets the center of the container, visually 'entering' the planet */
-}
-
-
-@keyframes pulse {
-    0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 15px rgba(255, 107, 107, 0.7), inset 0 0 10px rgba(0,0,0,0.2); }
-    50% { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 25px rgba(255, 107, 107, 1), inset 0 0 10px rgba(0,0,0,0.2); }
-    100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 15px rgba(255, 107, 107, 0.7), inset 0 0 10px rgba(0,0,0,0.2); }
-}
-
-/* --- Start Screen Styles --- */
+/* --- Start Screen Styles (Kiyowo Update) --- */
 #start-screen {
-    position: fixed; /* Or absolute if body has position relative */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 900; /* Below loader, above game */
-    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); /* Optional: Same or different background */
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; justify-content: center; align-items: center;
+    z-index: 900;
+    /* Background is now handled by body + bubbles */
+    background: none; /* Remove specific background */
+    opacity: 1; transition: opacity 0.5s ease-out;
 }
-
-#start-screen.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
+#start-screen.hidden { opacity: 0; pointer-events: none; }
 
 .start-content {
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.9); /* White, slightly transparent */
     padding: 40px 50px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    border-radius: 25px; /* More rounded */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 15px rgba(255, 255, 255, 0.3) inset; /* Added inset shadow */
     animation: fadeInScale 0.5s ease-out forwards;
+    border: 3px solid rgba(255, 255, 255, 0.5); /* Soft white border */
 }
 
 .game-title-start {
-    font-family: 'Lilita One', cursive;
-    font-size: 3.5rem;
-    color: #ff6b6b;
-    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.15);
+    font-size: 4rem; /* Bigger title */
+    color: #ff63a5; /* Bright Pink */
+    text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.1); /* Cute shadow */
+    margin-bottom: 0px;
+}
+.start-subtitle {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.2rem;
+    color: #8c52ff; /* Purple */
     margin-bottom: 30px;
+    font-weight: bold;
 }
 
 .cute-button {
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    border: none;
-    border-radius: 50px; /* Very rounded */
+    padding: 15px 35px; font-size: 1.3rem; font-weight: bold;
+    font-family: 'Nunito', sans-serif; cursor: pointer; border: none;
+    border-radius: 50px; color: white;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+    margin: 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+.cute-button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2); }
+.cute-button:active { transform: translateY(1px) scale(0.98); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+
+.start-btn { background: linear-gradient(45deg, #ff85e4, #ffabe1); } /* Pink gradient */
+.start-btn:hover { background: linear-gradient(45deg, #ff63a5, #ff85e4); }
+
+@keyframes fadeInScale { /* Keep as is */ }
+
+/* --- Game Container Styles --- */
+.game-container {
+    background-color: rgba(255, 255, 255, 0.92); /* Slightly more opaque */
+    padding: 20px 25px 30px 25px; /* Adjust padding */
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    width: 95%; /* Slightly wider on mobile */
+    max-width: 500px; /* Slightly smaller max width */
+    text-align: center;
+    margin: 20px auto; /* Adjust margin */
+    animation: fadeInScale 0.5s ease-out forwards;
+    position: relative; /* Needed for hamburger menu positioning */
+    border: 2px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Header */
+header { margin-bottom: 15px; }
+.title {
+    font-size: 2.5rem; color: #ff63a5; /* Use start screen pink */
+    text-shadow: 1px 1px 0 #fff, 2px 2px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+}
+.instructions { font-size: 0.9rem; color: #555; line-height: 1.6; }
+.instructions .color-hint { /* Keep as is */ }
+.instructions .correct { background-color: #6aaa64; }
+.instructions .present { background-color: #c9b458; }
+.instructions .absent { background-color: #999; } /* Grey instead of Red */
+
+/* Game Board */
+#game-board {
+    display: grid; gap: 6px; /* Slightly smaller gap */
+    margin-bottom: 20px; max-width: 380px; /* Adjust max width */
+    margin-left: auto; margin-right: auto; perspective: 500px;
+}
+.guess-row { display: grid; gap: 6px; }
+
+.letter-box {
+    width: 100%; aspect-ratio: 1 / 1;
+    border: 2px solid #d3d6da; border-radius: 8px; /* More rounded */
+    display: flex; justify-content: center; align-items: center;
+    font-size: 1.8rem; font-weight: bold; text-transform: uppercase;
+    color: #333; background-color: #fff;
+    transition: transform 0.6s ease, background-color 0.3s ease 0.3s, border-color 0.3s ease 0.3s, color 0.3s ease 0.3s; /* Delay color change */
+    transform-style: preserve-3d;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+/* Reveal Animation */
+.letter-box.reveal { animation: reveal 0.6s ease forwards; }
+@keyframes reveal {
+  0% { transform: rotateX(0deg); background-color: #fff; border-color: #d3d6da; color: #333; }
+  50% { transform: rotateX(-90deg); background-color: #fff; border-color: #d3d6da; color: transparent; }
+  /* Status color is applied via classes AFTER this animation assigns the final state */
+  100% { transform: rotateX(0deg); }
+}
+/* Status Colors (Applied *after* reveal animation completes via JS timing or direct class manipulation) */
+/* We'll apply these directly with JS for better timing control with reveal */
+.letter-box.correct-state { background-color: #6aaa64; border-color: #6aaa64; color: white; }
+.letter-box.present-state { background-color: #c9b458; border-color: #c9b458; color: white; }
+.letter-box.absent-state { background-color: #999; border-color: #999; color: white; } /* Grey */
+
+/* Win Animation */
+.letter-box.win-bounce { /* Keep as is */ }
+@keyframes win-bounce { /* Keep as is */ }
+
+/* --- Input Area (Kiyowo Update) --- */
+#input-area { margin-bottom: 20px; }
+#guess-form { display: flex; gap: 10px; justify-content: center; align-items: center; }
+
+#guess-input {
+    padding: 12px 18px; font-size: 1.1rem;
+    border: 2px solid #ffcce5; /* Light pink border */
+    border-radius: 25px; /* Fully rounded */
+    flex-grow: 1; max-width: 280px;
+    text-align: center; text-transform: uppercase;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05) inset; /* Inner shadow */
+    font-family: 'Nunito', sans-serif; /* Ensure font consistency */
+    color: #555;
+}
+#guess-input::placeholder { color: #f7a8d7; font-weight: normal; text-transform: none;} /* Cute placeholder */
+#guess-input:focus {
+    outline: none; border-color: #ff85e4; /* Brighter pink on focus */
+    box-shadow: 0 0 8px rgba(255, 133, 228, 0.5), 0 2px 5px rgba(0,0,0,0.05) inset;
+}
+#guess-input.shake-error { /* Keep as is */ }
+@keyframes shake { /* Keep as is */ }
+
+#submit-button {
+    padding: 12px 25px; font-size: 1rem; font-weight: bold;
+    font-family: 'Nunito', sans-serif; cursor: pointer; border: none;
+    border-radius: 25px; /* Match input */
+    background: linear-gradient(45deg, #ff85e4, #ffabe1); /* Pink gradient */
     color: white;
     transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    margin: 10px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.15);
 }
-
-.cute-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+#submit-button:hover:not(:disabled) {
+    background: linear-gradient(45deg, #ff63a5, #ff85e4);
+    transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
-
-.cute-button:active {
-    transform: translateY(1px) scale(0.98);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.start-btn {
-    background-color: #5cb85c; /* Greenish */
-}
-.start-btn:hover {
-    background-color: #4cae4c;
-}
-
-.settings-btn {
-    background-color: #f0ad4e; /* Orangey */
-    padding: 15px 20px; /* Make settings icon button squarer */
-    font-size: 1.5rem; /* Larger icon */
-}
-.settings-btn:hover {
-    background-color: #ec971f;
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* --- Settings Modal Styles --- */
-.modal {
-    position: fixed;
-    z-index: 1001; /* Above everything except maybe loader if needed */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* Dim background */
-    display: flex; /* Use flex to center modal content */
-    justify-content: center;
-    align-items: center;
-    opacity: 0; /* Start hidden */
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.modal.visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-
-.modal-content {
-    background-color: #fefefe;
-    padding: 25px 35px;
-    border: 1px solid #888;
-    border-radius: 15px;
-    width: 80%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    position: relative; /* For close button positioning */
-    animation: slideInModal 0.3s ease-out forwards;
-}
-
-
-@keyframes slideInModal {
-     from {
-        transform: translateY(-30px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.close-button {
-    color: #aaa;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: black;
-    text-decoration: none;
-}
-
-.modal h2 {
-    margin-bottom: 20px;
-    text-align: center;
-    color: #555;
-}
-
-.setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
-}
-.setting-item:last-child {
-    border-bottom: none;
-}
-
-.setting-item label {
-    font-size: 1rem;
-    color: #333;
-}
-
-/* The switch - adapted from W3Schools */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #f87171; /* Default Off (Red) */
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input:checked + .slider {
-  background-color: #6aaa64; /* On (Green) */
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #6aaa64;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-
-/* --- Game Container Styles (Minor Adjustments) --- */
-.game-container {
-    background-color: rgba(255, 255, 255, 0.95); /* Slightly less transparent */
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    width: 90%;
-    max-width: 550px;
-    text-align: center;
-    margin: 30px auto; /* Added margin for spacing when visible */
-    animation: fadeInScale 0.5s ease-out forwards; /* Add fade in */
-    /* display: none; Added inline style in HTML initially */
-}
-
-/* Header (Judul & Instruksi) */
-header {
-    margin-bottom: 20px;
-}
-
-.title {
-    font-family: 'Lilita One', cursive;
-    font-size: 2.8rem;
-    color: #ff6b6b;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 10px;
-}
-
-.instructions {
-    font-size: 0.95rem;
-    color: #555;
-    line-height: 1.5;
-}
-/* Add spans for color hints */
-.instructions .color-hint {
-    padding: 2px 5px;
-    border-radius: 3px;
-    color: white;
-    font-weight: bold;
-    margin: 0 2px;
-}
-.instructions .correct { background-color: #6aaa64; }
-.instructions .present { background-color: #c9b458; }
-.instructions .absent { background-color: #f87171; }
-
-
-/* Game Board (Area Tebakan) */
-#game-board {
-    display: grid;
-    grid-template-rows: repeat(7, 1fr); /* 7 baris tebakan */
-    gap: 8px;
-    margin-bottom: 25px;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-    perspective: 500px; /* Add perspective for reveal */
-}
-
-.guess-row {
-    display: grid;
-    gap: 8px;
-}
-
-.letter-box {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border: 2px solid #d3d6da;
-    border-radius: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: #333; /* Initial text color */
-    background-color: #fff;
-    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.5s ease, color 0.3s ease; /* Lengthen transform duration for reveal */
-    transform-style: preserve-3d; /* Needed for reveal flip */
-    position: relative; /* Needed for pseudo-elements if used for backface */
-}
-
-/* --- Reveal Animation --- */
-.letter-box.reveal {
-    animation: reveal 0.6s ease forwards;
-}
-
-@keyframes reveal {
-  0% { transform: rotateX(0deg); background-color: #fff; border-color: #d3d6da; color: #333; }
-  50% { transform: rotateX(-90deg); background-color: #fff; border-color: #d3d6da; color: transparent; /* Hide text during flip */ }
-  /* Color change happens AFTER the flip completes */
-  50.1% { background-color: var(--box-bg, #787c7e); border-color: var(--box-bg, #787c7e); color: white; } /* Use variable or default */
-  100% { transform: rotateX(0deg); background-color: var(--box-bg, #787c7e); border-color: var(--box-bg, #787c7e); color: white; }
-}
-
-
-/* Status Warna Kotak - Applied AFTER reveal */
-/* We now set CSS variables to control the reveal animation's final state */
-.letter-box.correct {
-    --box-bg: #6aaa64; /* Hijau */
-    /* transform: scale(1.05); Removed: Let reveal handle transform */
-}
-
-.letter-box.present {
-    --box-bg: #c9b458; /* Kuning/Oranye */
-}
-
-.letter-box.absent {
-    --box-bg: #f87171; /* Merah lembut */
-    /* Slightly different color for better contrast if needed */
-    /* --box-bg: #787c7e; */ /* Grey like original Wordle */
-}
-
-/* --- Win Animation --- */
-.letter-box.win-bounce {
-    animation: win-bounce 0.6s ease-out;
-    animation-delay: var(--bounce-delay, 0s); /* Stagger the bounce */
-}
-
-@keyframes win-bounce {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-15px) scale(1.1); } /* Bounce up and scale */
-}
-
-
-/* Area Input */
-#input-area {
-    margin-bottom: 15px;
-}
-
-#guess-form {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-#guess-input {
-    padding: 12px 15px;
-    font-size: 1rem;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    flex-grow: 1;
-    max-width: 300px;
-    text-align: center;
-    text-transform: uppercase;
-    transition: border-color 0.2s ease, transform 0.2s ease; /* Add transform transition for shake */
-}
-
-#guess-input:focus {
-    outline: none;
-    border-color: #fda085;
-}
-
-/* Input Shake Animation */
-@keyframes shake {
-  10%, 90% { transform: translateX(-1px); }
-  20%, 80% { transform: translateX(2px); }
-  30%, 50%, 70% { transform: translateX(-4px); }
-  40%, 60% { transform: translateX(4px); }
-}
-
-#guess-input.shake-error {
-    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-    border-color: #d9534f !important; /* Highlight border red */
-}
-
-
-#submit-button,
-#try-again-button {
-    padding: 12px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    font-family: 'Nunito', sans-serif;
-    cursor: pointer;
-    border: none;
-    border-radius: 8px;
-    background-color: #ff8a8a;
-    color: white;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-#submit-button:hover:not(:disabled), /* Only hover effect when enabled */
-#try-again-button:hover {
-    background-color: #ff6b6b;
-    transform: translateY(-1px); /* Subtle lift */
-}
-
-#submit-button:active:not(:disabled), /* Only active effect when enabled */
-#try-again-button:active {
-    transform: scale(0.98);
-}
-
-/* Style for disabled button */
+#submit-button:active:not(:disabled) { transform: scale(0.98) translateY(0); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
 #submit-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-    box-shadow: none;
+    background: #ddd; /* Grey out */
+    cursor: not-allowed; box-shadow: none; text-shadow: none;
+    border-color: #ccc;
 }
 
-
+/* Try Again Button */
 #try-again-button {
-    display: block;
-    margin: 20px auto 0;
-    background-color: #5bc0de; /* Different color for Try Again */
+    padding: 12px 25px; font-size: 1rem; font-weight: bold;
+    font-family: 'Nunito', sans-serif; cursor: pointer; border: none;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #8c52ff, #aa77ff); /* Purple Gradient */
+    color: white;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.15);
+    display: block; margin: 20px auto 0;
 }
 #try-again-button:hover {
-     background-color: #31b0d5;
+    background: linear-gradient(45deg, #7a3fe0, #8c52ff);
+    transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
+#try-again-button:active { transform: scale(0.98) translateY(0); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
 
-/* Area Pesan */
+
+/* Message Area */
 #message-area {
-    margin-top: 15px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    min-height: 25px;
-    transition: color 0.3s ease; /* Smooth color transition */
+    margin-top: 15px; font-size: 1.1rem; font-weight: bold;
+    min-height: 25px; transition: color 0.3s ease, transform 0.3s ease;
+    padding: 5px; border-radius: 5px;
+}
+#message-area.win { color: #fff; background-color: rgba(92, 184, 92, 0.8); transform: scale(1.05); }
+#message-area.lose { color: #fff; background-color: rgba(217, 83, 79, 0.8); transform: scale(1.05); }
+#message-area.error { color: #d9534f; /* Keep error text red */ background-color: rgba(255, 204, 229, 0.7); } /* Light pink bg for error */
+#message-area.info { color: #555; }
+
+/* --- Hamburger Menu & Side Panel --- */
+.menu-toggle-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1100; /* Above game content, below side menu overlay */
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.menu-toggle-button span {
+    display: block;
+    width: 100%;
+    height: 4px;
+    background-color: #ff85e4; /* Pink lines */
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+/* Animation for hamburger to X */
+.menu-toggle-button.open span:nth-child(1) { transform: translateY(10px) rotate(45deg); }
+.menu-toggle-button.open span:nth-child(2) { opacity: 0; }
+.menu-toggle-button.open span:nth-child(3) { transform: translateY(-10px) rotate(-45deg); }
+
+.side-menu {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Start off-screen */
+    width: 250px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.98); /* Almost opaque white */
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.15);
+    z-index: 1200; /* Above everything */
+    padding: 60px 20px 20px 20px;
+    transition: right 0.4s cubic-bezier(0.23, 1, 0.32, 1); /* Smooth slide */
+    border-left: 2px solid #ffabe1;
+}
+.side-menu.open { right: 0; }
+
+.side-menu h3 {
+    text-align: center; color: #8c52ff; /* Purple */
+    font-family: 'Lilita One', cursive; font-size: 1.8rem;
+    margin-bottom: 25px;
+}
+.side-menu ul { list-style: none; padding: 0; margin: 0; }
+.side-menu li {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; padding-bottom: 10px;
+    border-bottom: 1px dashed #ffcce5; /* Dashed pink border */
+}
+.side-menu li:last-child { border-bottom: none; }
+
+.side-menu label { font-size: 1rem; color: #555; font-weight: bold; }
+
+/* Reusing switch style from previous code */
+.switch { /* Keep as is */ }
+.switch input { /* Keep as is */ }
+.slider { /* Keep as is */ background-color: #ff8a8a; } /* Reddish Off */
+.slider:before { /* Keep as is */ }
+input:checked + .slider { background-color: #6aaa64; } /* Green On */
+input:focus + .slider { /* Keep as is */ }
+input:checked + .slider:before { /* Keep as is */ }
+.slider.round { /* Keep as is */ }
+.slider.round:before { /* Keep as is */ }
+
+.menu-button {
+    background: linear-gradient(45deg, #8c52ff, #aa77ff); /* Purple */
+    color: white; border: none; padding: 10px 15px;
+    border-radius: 20px; font-size: 0.9rem; font-weight: bold;
+    cursor: pointer; transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%; /* Make button full width */
+    text-align: center;
+}
+.menu-button:hover {
+    background: linear-gradient(45deg, #7a3fe0, #8c52ff);
+    transform: scale(1.03);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-#message-area.win { color: #5cb85c; }
-#message-area.lose { color: #d9534f; } /* Specific lose color */
-#message-area.error { color: #d9534f; }
-#message-area.info { color: #555; }
+.close-menu-button {
+    position: absolute; top: 10px; right: 15px;
+    background: none; border: none; font-size: 2rem;
+    color: #aaa; cursor: pointer; padding: 5px; line-height: 1;
+}
+.close-menu-button:hover { color: #ff63a5; } /* Pink hover */
 
 
 /* --- Responsiveness --- */
 @media (max-width: 600px) {
-    body {
-        /* padding-top: 15px; Removed */
-         align-items: flex-start; /* Allow scrolling on small screens */
-         padding: 15px 0; /* Add some padding top/bottom */
-    }
-    .game-container {
-        padding: 15px;
-        width: 95%;
-        margin: 15px auto; /* Adjust margin */
-    }
-     .start-content {
-        padding: 30px 25px;
-        width: 90%;
-    }
-    .game-title-start {
-        font-size: 2.5rem;
-        margin-bottom: 20px;
-    }
-    .cute-button {
-        padding: 12px 25px;
-        font-size: 1rem;
-        margin: 8px;
-    }
-     .settings-btn {
-        padding: 12px 18px;
-        font-size: 1.3rem;
-    }
-
-    .title {
-        font-size: 2.2rem;
-    }
-    .instructions {
-        font-size: 0.85rem; /* Slightly smaller */
-    }
-    .letter-box {
-        font-size: 1.5rem; /* Adjusted for better fit */
-    }
-    #game-board {
-        max-width: 100%;
-        gap: 5px;
-        perspective: 300px; /* Adjust perspective */
-    }
-    .guess-row {
-        gap: 5px;
-    }
-    #guess-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    #guess-input {
-        max-width: none;
-        margin-bottom: 8px;
-        font-size: 0.9rem; /* Adjust input font size */
-    }
-    #submit-button,
-    #try-again-button {
-         width: 100%;
-         padding: 10px 15px; /* Adjust button padding */
-         font-size: 0.95rem;
-    }
-    #message-area {
-        font-size: 1rem;
-    }
-    .modal-content {
-        width: 90%;
-        padding: 20px;
-    }
-    .modal h2 {
-        font-size: 1.3rem;
-    }
-    .setting-item label {
-        font-size: 0.9rem;
-    }
-    .switch { /* Adjust switch size */
-        width: 50px;
-        height: 28px;
-    }
-    .slider:before {
-        height: 20px;
-        width: 20px;
-        left: 4px;
-        bottom: 4px;
-    }
-    input:checked + .slider:before {
-        transform: translateX(22px); /* Adjust translate distance */
-    }
-
+    body { align-items: flex-start; padding-top: 15px; overflow-y: auto; } /* Allow scroll on small devices */
+    .game-container { width: 95%; padding: 15px 15px 20px 15px; margin: 15px auto; }
+    .start-content { padding: 30px 25px; width: 90%; }
+    .game-title-start { font-size: 3rem; }
+    .start-subtitle { font-size: 1rem; }
+    .cute-button { padding: 12px 25px; font-size: 1.1rem; }
+    .title { font-size: 2rem; }
+    .instructions { font-size: 0.85rem; line-height: 1.5;}
+    .letter-box { font-size: 1.5rem; border-radius: 6px;}
+    #game-board { max-width: 100%; gap: 5px; perspective: 300px; }
+    .guess-row { gap: 5px; }
+    #guess-input { max-width: none; font-size: 1rem; padding: 10px 15px; border-radius: 20px;}
+    #submit-button { padding: 10px 20px; font-size: 0.95rem; border-radius: 20px; }
+    #try-again-button { padding: 10px 20px; font-size: 0.95rem; border-radius: 20px; }
+    #message-area { font-size: 1rem; }
+    .side-menu { width: 220px; right: -250px; } /* Adjust width/position */
+    .menu-toggle-button { top: 10px; right: 10px; width: 35px; height: 25px; }
+    .menu-toggle-button span { height: 3px; }
+    .menu-toggle-button.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+    .menu-toggle-button.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 }
 
 @media (max-width: 380px) {
-     .title {
-        font-size: 1.9rem; /* Further reduce */
-    }
-    .game-title-start {
-        font-size: 2.1rem;
-    }
-     .instructions {
-        font-size: 0.8rem;
-    }
-    .letter-box {
-        font-size: 1.2rem; /* Kecilkan lagi font */
-    }
-     .cute-button {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
-     .settings-btn {
-        padding: 10px 15px;
-        font-size: 1.1rem;
-    }
+    .title { font-size: 1.8rem; }
+    .game-title-start { font-size: 2.5rem; }
+    .instructions { font-size: 0.8rem; }
+    .letter-box { font-size: 1.2rem; }
+    .cute-button { padding: 10px 20px; font-size: 1rem; }
+    #guess-input { font-size: 0.9rem; }
+    #submit-button, #try-again-button { font-size: 0.9rem; padding: 9px 18px; }
 }
