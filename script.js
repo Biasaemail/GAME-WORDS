@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Variabel Global ---
-    const wordList = ["CAHAYA", "TAUHID", "MANDI", "ROBLOX", "JALAN", "SIGMA", "PUASA", "LAPAR", "DASI"];
+    const wordList = ["CAHAYA", "TAUHID", "MANDI", "ROBLOX", "JALAN", "SIGMA", "PUASA", "LAPAR", "DASI" ,"BERENANG" ,"MUNGKIN"];
     let targetWord = '';
     let currentGuess = '';
     let currentRowIndex = 0;
