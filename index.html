@@ -3,20 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEBAK KATA </title>
+    <title>TEBAK KATA ✨</title> <!-- Added emoji for fun -->
     <link rel="stylesheet" href="style.css">
     <!-- Impor Font Lucu dari Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❓</text></svg>"> <!-- Simple Favicon -->
 </head>
 <body>
-    <div class="game-container">
+
+    <!-- 1. Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader-container">
+            <div class="loader-planet"></div>
+            <div class="loader-letter l1">T</div>
+            <div class="loader-letter l2">E</div>
+            <div class="loader-letter l3">B</div>
+            <div class="loader-letter l4">A</div>
+            <div class="loader-letter l5">K</div>
+        </div>
+        <p>Memuat...</p>
+    </div>
+
+    <!-- 2. Start Screen -->
+    <div id="start-screen">
+         <div class="start-content">
+            <h1 class="title game-title-start">TEBAK KATA</h1>
+            <button id="start-button" class="cute-button start-btn">Mulai ✨</button>
+            <button id="settings-button" class="cute-button settings-btn">⚙️</button>
+        </div>
+    </div>
+
+    <!-- 3. Settings Modal -->
+    <div id="settings-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-button">×</span>
+            <h2>Pengaturan</h2>
+            <div class="setting-item">
+                <label for="music-toggle">Musik Latar</label>
+                <label class="switch">
+                    <input type="checkbox" id="music-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <!-- Tambahkan pengaturan lain di sini jika perlu -->
+        </div>
+    </div>
+
+    <!-- 4. Game Container (Initially Hidden) -->
+    <div class="game-container" style="display: none;">
         <header>
-            <h1 class="title">TEBAK KATA </h1>
+            <h1 class="title">TEBAK KATA</h1>
             <p class="instructions">
                 Tebak kata tersembunyi dalam 7 kali percobaan! <br>
-                Hijau: Huruf & posisi benar. Kuning: Huruf benar, posisi salah. Merah: Huruf salah.
+                <span class="color-hint correct">Hijau</span>: Huruf & posisi benar.
+                <span class="color-hint present">Kuning</span>: Huruf benar, posisi salah.
+                <span class="color-hint absent">Merah</span>: Huruf salah.
             </p>
         </header>
 
@@ -33,8 +76,9 @@
                     autocomplete="off"
                     aria-label="Masukkan tebakannya disini"
                     placeholder="Ketik tebakanmu..."
+                    disabled <!-- Start disabled -->
                 >
-                <button type="submit" id="submit-button">Tebak</button>
+                <button type="submit" id="submit-button" disabled>Tebak</button> <!-- Start disabled -->
              </form>
         </div>
 
@@ -44,6 +88,15 @@
 
         <button id="try-again-button" style="display: none;">Coba Lagi</button>
     </div>
+
+    <!-- 5. Audio Element -->
+    <audio id="background-music" loop>
+        <!-- !!! GANTI DENGAN FILE MUSIKMU !!! -->
+        <source src="your-cute-music.mp3" type="audio/mpeg">
+        <!-- Tambahkan source OGG jika perlu untuk browser lain -->
+        <!-- <source src="your-cute-music.ogg" type="audio/ogg"> -->
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
 
     <script src="script.js"></script>
 </body>
