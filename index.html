@@ -3,63 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEBAK KATA ✨</title> <!-- Added emoji for fun -->
+    <title>TEBAK KATA 💖 Bubble Fun!</title> <!-- Changed Title -->
     <link rel="stylesheet" href="style.css">
     <!-- Impor Font Lucu dari Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>❓</text></svg>"> <!-- Simple Favicon -->
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700&family=Pacifico&display=swap" rel="stylesheet"> <!-- Added Pacifico for cuteness -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>"> <!-- Cute Favicon -->
 </head>
 <body>
 
-    <!-- 1. Loading Screen -->
+    <!-- Background Bubbles Container -->
+    <div class="bubbles-background">
+        <!-- Bubbles will be added here by CSS/JS if needed, or purely CSS -->
+    </div>
+
+    <!-- 1. Loading Screen (Keep as is) -->
     <div id="loading-screen">
         <div class="loader-container">
             <div class="loader-planet"></div>
-            <div class="loader-letter l1">T</div>
-            <div class="loader-letter l2">E</div>
-            <div class="loader-letter l3">B</div>
+            <div class="loader-letter l1">K</div>
+            <div class="loader-letter l2">A</div>
+            <div class="loader-letter l3">T</div>
             <div class="loader-letter l4">A</div>
-            <div class="loader-letter l5">K</div>
+            <div class="loader-letter l5">!</div>
         </div>
-        <p>Memuat...</p>
+        <p>Siap-siap main...</p>
     </div>
 
-    <!-- 2. Start Screen -->
+    <!-- 2. Start Screen (Keep structure, styles will change) -->
     <div id="start-screen">
          <div class="start-content">
-            <h1 class="title game-title-start">TEBAK KATA</h1>
+            <h1 class="title game-title-start pacifico-font">Tebak Kata</h1> <!-- Added a cute font class -->
+            <p class="start-subtitle">Edisi Super Kiyowo!</p>
             <button id="start-button" class="cute-button start-btn">Mulai ✨</button>
-            <button id="settings-button" class="cute-button settings-btn">⚙️</button>
+            <!-- Settings button removed from here, moved to hamburger menu -->
         </div>
     </div>
 
-    <!-- 3. Settings Modal -->
-    <div id="settings-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close-button">×</span>
-            <h2>Pengaturan</h2>
-            <div class="setting-item">
-                <label for="music-toggle">Musik Latar</label>
-                <label class="switch">
-                    <input type="checkbox" id="music-toggle">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-            <!-- Tambahkan pengaturan lain di sini jika perlu -->
-        </div>
-    </div>
-
-    <!-- 4. Game Container (Initially Hidden) -->
+    <!-- 3. Game Container (Initially Hidden) -->
     <div class="game-container" style="display: none;">
+
+        <!-- Hamburger Menu Button -->
+        <button id="menu-toggle" class="menu-toggle-button">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Side Menu (Initially Hidden) -->
+        <div id="side-menu" class="side-menu">
+            <button class="close-menu-button">×</button> <!-- Added close button inside menu -->
+            <h3>Menu</h3>
+            <ul>
+                <li>
+                    <label for="music-toggle-menu">Musik</label>
+                    <label class="switch">
+                        <input type="checkbox" id="music-toggle-menu">
+                        <span class="slider round"></span>
+                    </label>
+                </li>
+                <li>
+                    <button id="return-to-main-menu" class="menu-button">Kembali ke Awal</button>
+                </li>
+                <!-- Add other settings/links here -->
+            </ul>
+        </div>
+
         <header>
-            <h1 class="title">TEBAK KATA</h1>
+            <h1 class="title lilita-font">TEBAK KATA</h1> <!-- Use specific font class -->
             <p class="instructions">
-                Tebak kata tersembunyi dalam 7 kali percobaan! <br>
-                <span class="color-hint correct">Hijau</span>: Huruf & posisi benar.
-                <span class="color-hint present">Kuning</span>: Huruf benar, posisi salah.
-                <span class="color-hint absent">Merah</span>: Huruf salah.
+                Tebak kata rahasia! Kamu punya <span id="guesses-left">7</span> kesempatan.<br>
+                <span class="color-hint correct">Hijau</span>: Pas!
+                <span class="color-hint present">Kuning</span>: Ada, tapi salah tempat.
+                <span class="color-hint absent">Abu</span>: Nggak ada.
             </p>
         </header>
 
@@ -69,16 +86,17 @@
 
         <div id="input-area">
              <form id="guess-form">
+                <!-- Ensure attributes are INSIDE the angle brackets -->
                 <input
                     type="text"
                     id="guess-input"
-                    maxlength="5"  <!-- Akan diupdate oleh JS -->
+                    maxlength="5"
                     autocomplete="off"
-                    aria-label="Masukkan tebakannya disini"
-                    placeholder="Ketik tebakanmu..."
-                    disabled <!-- Start disabled -->
-                >
-                <button type="submit" id="submit-button" disabled>Tebak</button> <!-- Start disabled -->
+                    aria-label="Masukkan tebakanmu di sini"
+                    placeholder="Ketik di sini..."
+                    disabled
+                />
+                <button type="submit" id="submit-button" disabled>Tebak!</button>
              </form>
         </div>
 
@@ -86,16 +104,15 @@
             <!-- Pesan status permainan akan muncul di sini -->
         </div>
 
-        <button id="try-again-button" style="display: none;">Coba Lagi</button>
+        <button id="try-again-button" style="display: none;">Main Lagi Yuk!</button>
     </div>
 
-    <!-- 5. Audio Element -->
+    <!-- Audio Element - USER MUST CHANGE SRC -->
     <audio id="background-music" loop>
-        <!-- !!! GANTI DENGAN FILE MUSIKMU !!! -->
-        <source src="your-cute-music.mp3" type="audio/mpeg">
-        <!-- Tambahkan source OGG jika perlu untuk browser lain -->
-        <!-- <source src="your-cute-music.ogg" type="audio/ogg"> -->
-        Browser Anda tidak mendukung elemen audio.
+        <!-- !!! GANTI DENGAN FILE MUSIK BUBBLE GUM KAMU !!! -->
+        <source src="your-bubble-music.mp3" type="audio/mpeg">
+        <!-- <source src="your-bubble-music.ogg" type="audio/ogg"> -->
+        Browser kamu nggak support musik :'(
     </audio>
 
     <script src="script.js"></script>
